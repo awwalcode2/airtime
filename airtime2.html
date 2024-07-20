@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="airtime2.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #copy-paste {
+            display: flex;
+            gap: 60px;
+        }
+
+        #copy-paste button {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            box-shadow: -2px 2px 2px black;
+            color: wheat;
+            width: 80px;
+        }
+        .dis{
+            display: flex;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+   
+   <div class="dis">
+
+    <div>
+        <section>
+            <label for="amount"> amount </label>
+            <select name="" id="amount">
+                <option value=""> choose amount </option>
+                <option value="1000"> 1000 </option>
+                <option value="500"> 500 </option>
+                <option value="200"> 200 </option>
+                <option value="100"> 100 </option>
+            </select>
+    
+        </section>
+    </div>
+
+
+   <div>
+    <section>
+        <label for="provider"> provider </label>
+        <select name="" id="provider">
+            <option value=""> choose provider </option>
+            <option value="mtn"> mtn </option>
+            <option value="glo"> glo </option>
+            <option value="airtel"> airtel </option>
+            <option value="9mobile"> 9mobile </option>
+        </select>
+
+    </section>
+   </div>
+
+   </div>
+    <button onclick="generate()">generate</button>
+
+    <h1>PIN : <span id="pin2"> </span> </h1>
+
+    <div id="copy-paste">
+        <div>
+            <button onclick="copypin()" id="copy">COPY</button>
+        </div>
+
+        <div>
+            <button onclick="pastepin()" id="paste">PASTE</button>
+        </div>
+    </div>
+
+    <h1><input id="loader" /> <button onclick="load()">load</button> </h1>
+
+    <h1> Balance : <h1 id="bal"> </h1>
+    </h1>
+
+
+    <table id="table">
+        <thead id="thead">
+            <th> provider </th>
+            <th> amount </th>
+            <th> pin </th>
+            <th> used </th>
+        </thead>
+        <tbody id="tbody">
+            <tr>
+
+
+            </tr>
+
+
+
+        </tbody>
+    </table>
+
+</body>
+
+</html>
+<script>
+
+    let rechargeCards = JSON.parse(localStorage.getItem('rechargeCards')) || []
+    let balan = JSON.parse(localStorage.getItem('balance')) || 0
+
+    console.log(rechargeCards);
+
+    function generate(params) {
+        let pin = ''
+        for (let index = 0; index < 15; index++) {
+            let num = Math.floor(Math.random() * 10)
+            pin = pin + num
+
+        }
+        if (provider.value === '' || amount.value3 === '') {
+            alert('all fields are mandatory')
+        } else {
+            pin2.innerHTML = pin
+            let pinObject = {
+                provider: provider.value,
+                amount: amount.value,
+                pin: pin,
+                used: false
+            }
+            rechargeCards.push(pinObject)
+            console.log(rechargeCards)
+            localStorage.setItem('balance', JSON.stringify(balan))
+            localStorage.setItem('rechargeCards', JSON.stringify(rechargeCards))
+            display()
+        }
+    }
+
+
+    let pinCopied = []
+    bal.innerHTML = balan
+    let recharger = loader.value
+    function load() {
+       
+        let thePin = recharger.slice(5, 20)
+        console.log(thePin);
+
+        let obj = rechargeCards.find((rechargecard) => rechargecard.pin === thePin)
+
+        console.log(obj);
+
+        if (obj === undefined) {
+            alert('invalid pin')
+        }
+        else if (obj && obj.used === true) {
+            alert('this card has been used by you')
+        }
+        else if (recharger.startsWith('*310*') && recharger.endsWith('#') && obj) {
+            alert(`you have successfully recharged ${obj.provider} of ${obj.amount}`)
+            obj.used = true
+            balan += Number(obj.amount)
+            bal.innerHTML = balan
+            localStorage.setItem('balance', JSON.stringify(balan))
+            localStorage.setItem('rechargeCards', JSON.stringify(rechargeCards))
+            display()
+
+        } else {
+            alert('invalid format')
+        }
+
+    }
+
+
+    function copypin() {
+        pinCopied.push(pin2.innerHTML)
+        console.log(pinCopied);
+    }
+
+
+    function pastepin() {
+        loader.value = pinCopied[pinCopied.length - 1]
+    }
+
+    function display() {
+        tbody.innerHTML = ''
+        rechargeCards.forEach((rechargecard) => {
+            tbody.innerHTML += `
+                  <tr>
+                    <td> ${rechargecard.provider} </td> 
+                    <td> ${rechargecard.amount}</td> 
+                    <td> ${rechargecard.pin} </td> 
+                    <td> ${rechargecard.used}</td> 
+                    </tr>
+                `
+
+
+        })
+    }
+
+    display()
+
+
+</script>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="result">12345abcd</div>
+    <h1><input id="loader" /> <button onclick="copy()">copy</button> <button onclick="paste()">paste</button> </h1>
+
+</body>
+</html>
+<script>
+    let arr = []
+    let arr2 = []
+    function copy() {
+        arr.push(result.innerHTML)
+        console.log(arr);
+    }
+
+    function paste() {
+        loader.value = arr[arr.length - 1]
+
+        // arr2.push(arr)
+        // console.log( arr2);
+    }
+</script> -->
